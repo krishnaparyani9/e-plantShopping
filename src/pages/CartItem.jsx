@@ -9,16 +9,22 @@ export default function CartItem() {
   const totalAmount = useSelector(state => state.cart.totalAmount);
   const totalQuantity = useSelector(state => state.cart.totalQuantity);
 
-  const handleIncreaseQuantity = (productId) => {
-    dispatch(cartActions.increaseQuantity(productId));
+  const handleIncreaseQuantity = (item) => {
+    dispatch(cartActions.updateQuantity({
+      id: item.id,
+      quantity: item.quantity + 1,
+    }));
   };
 
-  const handleDecreaseQuantity = (productId) => {
-    dispatch(cartActions.decreaseQuantity(productId));
+  const handleDecreaseQuantity = (item) => {
+    dispatch(cartActions.updateQuantity({
+      id: item.id,
+      quantity: item.quantity - 1,
+    }));
   };
 
   const handleRemoveItem = (productId) => {
-    dispatch(cartActions.removeFromCart(productId));
+    dispatch(cartActions.removeItem(productId));
   };
 
   const handleCheckout = () => {
@@ -55,14 +61,14 @@ export default function CartItem() {
                     <div className="item-quantity">
                       <button
                         className="qty-btn minus"
-                        onClick={() => handleDecreaseQuantity(item.id)}
+                        onClick={() => handleDecreaseQuantity(item)}
                       >
                         −
                       </button>
                       <span className="qty-display">{item.quantity}</span>
                       <button
                         className="qty-btn plus"
-                        onClick={() => handleIncreaseQuantity(item.id)}
+                        onClick={() => handleIncreaseQuantity(item)}
                       >
                         +
                       </button>
