@@ -1,4 +1,4 @@
-# Paradise Nursery Shopping Application
+# e-plantShopping
 
 ## Project Overview
 Paradise Nursery is a dynamic e-commerce shopping application for an online plant shop. The application allows users to browse plants organized by categories, view plant details with images and prices, add plants to their shopping cart, and manage cart items with ease.
