@@ -10,13 +10,15 @@ import './App.css';
 
 function LandingPage() {
   const [showProducts, setShowProducts] = useState(false);
+  const handleGetStartedClick = () => setShowProducts(true);
 
   if (showProducts) {
     return <ProductList />;
   }
 
   return (
-    <>
+    <div className="app-container">
+      <Navbar />
       <section className="landing-page background-image">
         <div className="landing-container">
           <h1>Welcome to Paradise Nursery</h1>
@@ -24,14 +26,14 @@ function LandingPage() {
           <button
             type="button"
             className="get-started-btn"
-            onClick={() => setShowProducts(true)}
+            onClick={handleGetStartedClick}
           >
             Get Started
           </button>
         </div>
       </section>
       <AboutUs />
-    </>
+    </div>
   );
 }
 
@@ -39,7 +41,6 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Navbar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/products" element={<ProductList />} />

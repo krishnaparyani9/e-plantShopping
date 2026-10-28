@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Navbar from '../components/Navbar';
 import { cartActions } from '../store/CartSlice';
 import './ProductList.css';
 
 export default function ProductList() {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart.items);
+  const cartQuantity = useSelector(state => state.cart.totalQuantity);
   const [addedToCart, setAddedToCart] = useState(() =>
     Object.fromEntries(cartItems.map(item => [item.name, true]))
   );
@@ -72,30 +74,35 @@ export default function ProductList() {
   };
 
   return (
-    <div className="product-list-page">
-      <h1 className="page-title">Our Plants Collection</h1>
-      
-      {plantsArray.map(({ category, plants }) => (
-        <section key={category} className="product-list category-section">
-          <h2 className="category-title">{category}</h2>
-          <div className="products-grid">
-            {plants.map(plant => (
-              <div key={plant.id} className="product-card">
-                <div className="product-image">{plant.image}</div>
-                <h3 className="product-name">{plant.name}</h3>
-                <p className="product-price">${plant.price}</p>
-                <button
-                  className={`add-to-cart-btn ${addedToCart[plant.name] ? 'disabled' : ''}`}
-                  onClick={() => handleAddToCart(plant)}
-                  disabled={addedToCart[plant.name]}
-                >
-                  {addedToCart[plant.name] ? '✓ Added' : 'Add to Cart'}
-                </button>
+    <>
+      <Navbar />
+      <div className="product-list-page">
+        <h1 className="page-title">
+            Our Plants Collection <span aria-label={`${cartQuantity} items in cart`}>🛒 {cartQuantity}</span>
+        </h1>
+
+        {plantsArray.map(({ category, plants }) => (
+            <section key={category} className="product-list category-section">
+              <h2 className="category-title">{category}</h2>
+              <div className="products-grid">
+                {plants.map(plant => (
+                  <div key={plant.id} className="product-card">
+                    <div className="product-image">{plant.image}</div>
+                    <h3 className="product-name">{plant.name}</h3>
+                    <p className="product-price">${plant.price}</p>
+                    <button
+                      className={`add-to-cart-btn ${addedToCart[plant.name] ? 'disabled' : ''}`}
+                      onClick={() => handleAddToCart(plant)}
+                      disabled={addedToCart[plant.name]}
+                    >
+                      {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
+            </section>
+        ))}
+      </div>
+    </>
   );
 }

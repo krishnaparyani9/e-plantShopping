@@ -4,6 +4,17 @@
   box-sizing: border-box;
 }
 
+.background-image {
+  background-image: linear-gradient(rgba(20, 45, 28, 0.55), rgba(20, 45, 28, 0.55)), url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.app-container {
+  flex: 1;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f5f7fa;
@@ -20,15 +31,6 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
-}
-
-.background-image {
-  background-image:
-    linear-gradient(rgba(20, 45, 28, 0.55), rgba(20, 45, 28, 0.55)),
-    url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .landing-page::before {
