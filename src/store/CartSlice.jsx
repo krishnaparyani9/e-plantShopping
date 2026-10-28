@@ -12,9 +12,12 @@ const updateCartTotals = (state) => {
     0
   );
   state.totalAmount = state.items.reduce(
-    (sum, item) => sum + item.totalPrice,
+    (sum, item) => sum + item.quantity * item.cost,
     0
   );
+  state.items.forEach(item => {
+    item.totalPrice = item.quantity * item.cost;
+  });
 };
 
 const CartSlice = createSlice({
@@ -24,18 +27,20 @@ const CartSlice = createSlice({
     addItem(state, action) {
       const newItem = action.payload;
       const existingItem = state.items.find(item => item.id === newItem.id);
+      const cost = newItem.cost ?? newItem.price;
 
       if (existingItem) {
         existingItem.quantity++;
-        existingItem.totalPrice += newItem.price;
+        existingItem.totalPrice = existingItem.quantity * existingItem.cost;
       } else {
         state.items.push({
           id: newItem.id,
           name: newItem.name,
-          price: newItem.price,
+          cost,
+          price: cost,
           image: newItem.image,
           quantity: 1,
-          totalPrice: newItem.price,
+          totalPrice: cost,
         });
       }
 
@@ -43,8 +48,9 @@ const CartSlice = createSlice({
     },
 
     removeItem(state, action) {
-      const id = action.payload;
-      const itemIndex = state.items.findIndex(item => item.id === id);
+      const itemIndex = state.items.findIndex(
+        item => item.id === action.payload || item.name === action.payload
+      );
 
       if (itemIndex !== -1) {
         state.items.splice(itemIndex, 1);
@@ -55,15 +61,20 @@ const CartSlice = createSlice({
 
     updateQuantity(state, action) {
       const { id, quantity } = action.payload;
-      if (!Number.isInteger(quantity) || quantity < 1) {
+      if (!Number.isInteger(quantity) || quantity < 0) {
         return;
       }
 
-      const item = state.items.find(item => item.id === id);
+      const itemIndex = state.items.findIndex(
+        item => item.id === id || item.name === id
+      );
 
-      if (item) {
+      if (itemIndex !== -1 && quantity === 0) {
+        state.items.splice(itemIndex, 1);
+      } else if (itemIndex !== -1) {
+        const item = state.items[itemIndex];
         item.quantity = quantity;
-        item.totalPrice = item.price * quantity;
+        item.totalPrice = item.cost * quantity;
       }
 
       updateCartTotals(state);

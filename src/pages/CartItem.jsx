@@ -1,30 +1,38 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartActions } from '../store/CartSlice';
 import './CartItem.css';
 
 export default function CartItem() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cartItems = useSelector(state => state.cart.items);
-  const totalAmount = useSelector(state => state.cart.totalAmount);
   const totalQuantity = useSelector(state => state.cart.totalQuantity);
+  const totalAmount = cartItems.reduce(
+    (sum, item) => sum + item.quantity * item.cost,
+    0
+  );
 
-  const handleIncreaseQuantity = (item) => {
+  const handleIncrement = (item) => {
     dispatch(cartActions.updateQuantity({
       id: item.id,
       quantity: item.quantity + 1,
     }));
   };
 
-  const handleDecreaseQuantity = (item) => {
+  const handleDecrement = (item) => {
     dispatch(cartActions.updateQuantity({
       id: item.id,
       quantity: item.quantity - 1,
     }));
   };
 
-  const handleRemoveItem = (productId) => {
-    dispatch(cartActions.removeItem(productId));
+  const handleRemove = (item) => {
+    dispatch(cartActions.removeItem(item.name));
+  };
+
+  const handleContinueShopping = () => {
+    navigate('/products');
   };
 
   const handleCheckout = () => {
@@ -39,88 +47,98 @@ export default function CartItem() {
         {cartItems.length === 0 ? (
           <div className="empty-cart">
             <p className="empty-message">Your cart is empty!</p>
-            <Link to="/products" className="continue-shopping-btn">
+            <button
+              type="button"
+              className="get-started-button"
+              onClick={handleContinueShopping}
+            >
               Start Shopping
-            </Link>
+            </button>
           </div>
         ) : (
           <>
-            <div className="cart-content">
-              <div className="cart-items">
-                <h2 className="items-title">Cart Items ({totalQuantity})</h2>
-                
-                {cartItems.map(item => (
-                  <div key={item.id} className="cart-item">
-                    <div className="item-image">{item.image}</div>
-                    
-                    <div className="item-details">
-                      <h3 className="item-name">{item.name}</h3>
-                      <p className="item-price">Unit Price: ${item.price.toFixed(2)}</p>
-                    </div>
+            <h2 className="items-title">Cart Items ({totalQuantity})</h2>
 
-                    <div className="item-quantity">
-                      <button
-                        className="qty-btn minus"
-                        onClick={() => handleDecreaseQuantity(item)}
-                      >
-                        −
-                      </button>
-                      <span className="qty-display">{item.quantity}</span>
-                      <button
-                        className="qty-btn plus"
-                        onClick={() => handleIncreaseQuantity(item)}
-                      >
-                        +
-                      </button>
-                    </div>
+            {cartItems.map(item => (
+              <div key={item.id} className="cart-item">
+                <div className="item-image">{item.image}</div>
 
-                    <div className="item-total">
-                      <p className="total-label">Total:</p>
-                      <p className="total-price">${item.totalPrice.toFixed(2)}</p>
-                    </div>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleRemoveItem(item.id)}
-                      title="Remove from cart"
-                    >
-                      🗑
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="cart-summary">
-                <h2 className="summary-title">Order Summary</h2>
-                
-                <div className="summary-item">
-                  <span>Total Items:</span>
-                  <span>{totalQuantity}</span>
+                <div className="item-details">
+                  <h3 className="item-name">{item.name}</h3>
+                  <p className="item-price">Unit Price: ${item.cost.toFixed(2)}</p>
                 </div>
 
-                <div className="summary-item">
-                  <span>Subtotal:</span>
-                  <span>${totalAmount.toFixed(2)}</span>
+                <div className="item-quantity">
+                  <button
+                    className="qty-btn minus"
+                    onClick={() => handleDecrement(item)}
+                    aria-label={`Decrease ${item.name} quantity`}
+                  >
+                    −
+                  </button>
+                  <span className="qty-display">{item.quantity}</span>
+                  <button
+                    className="qty-btn plus"
+                    onClick={() => handleIncrement(item)}
+                    aria-label={`Increase ${item.name} quantity`}
+                  >
+                    +
+                  </button>
                 </div>
 
-                <div className="summary-item shipping">
-                  <span>Shipping:</span>
-                  <span>Free</span>
+                <div className="item-total">
+                  <p className="total-label">Total:</p>
+                  <p className="total-price">
+                    ${(item.quantity * item.cost).toFixed(2)}
+                  </p>
                 </div>
 
-                <div className="summary-total">
-                  <span>Grand Total:</span>
-                  <span>${totalAmount.toFixed(2)}</span>
-                </div>
-
-                <button className="checkout-btn" onClick={handleCheckout}>
-                  Coming Soon
+                <button
+                  type="button"
+                  className="delete-button"
+                  onClick={() => handleRemove(item)}
+                  title="Remove from cart"
+                  aria-label={`Remove ${item.name} from cart`}
+                >
+                  Delete
                 </button>
-
-                <Link to="/products" className="continue-shopping-link">
-                  ← Continue Shopping
-                </Link>
               </div>
+            ))}
+
+            <div className="cart-summary">
+              <h2 className="summary-title">Order Summary</h2>
+
+              <div className="summary-item">
+                <span>Total Items:</span>
+                <span>{totalQuantity}</span>
+              </div>
+
+              <div className="summary-item">
+                <span>Subtotal:</span>
+                <span>${totalAmount.toFixed(2)}</span>
+              </div>
+
+              <div className="summary-item shipping">
+                <span>Shipping:</span>
+                <span>Free</span>
+              </div>
+
+              <div className="summary-total">
+                <span>Grand Total:</span>
+                <span>${totalAmount.toFixed(2)}</span>
+              </div>
+
+              <button className="checkout-btn" onClick={handleCheckout}>
+                Coming Soon
+              </button>
+
+              <button
+                type="button"
+                className="get-started-button"
+                onClick={handleContinueShopping}
+              >
+                Continue Shopping
+              </button>
             </div>
           </>
         )}

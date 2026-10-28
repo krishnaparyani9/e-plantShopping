@@ -61,6 +61,7 @@ export default function ProductList() {
     dispatch(cartActions.addItem({
       id: plant.id,
       name: plant.name,
+      cost: plant.price,
       price: plant.price,
       image: plant.image,
     }));
